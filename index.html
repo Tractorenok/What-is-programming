@@ -1,0 +1,1108 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Что такое программирование? — Интерактивный гид</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #090d16;
+      --panel: rgba(17, 24, 39, 0.75);
+      --panel-strong: rgba(30, 41, 59, 0.9);
+      --line: rgba(56, 189, 248, 0.15);
+      --line-strong: rgba(56, 189, 248, 0.4);
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --faint: #64748b;
+      --violet: #38bdf8; /* Голубой неоновый (свет кодинга) */
+      --violet-dim: rgba(56, 189, 248, 0.25);
+      --amber: #f59e0b;
+      --green: #10b981;
+      --radius: 12px;
+      --shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      min-height: 100%;
+    }
+
+    body {
+      margin: 0;
+      overflow-x: hidden;
+      background: var(--bg);
+      color: var(--text);
+      font-family: "Fira Code", "Consolas", "SF Pro Text", "Segoe UI", sans-serif;
+      letter-spacing: -0.01em;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: geometricPrecision;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    /* Красивый технологичный задний план (Вместо гор — цифровая сетка матрицы) */
+    .scene {
+      position: fixed;
+      inset: 0;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 50% 30%, rgba(14, 165, 233, 0.15), transparent 25%),
+        radial-gradient(circle at 10% 70%, rgba(99, 102, 241, 0.08), transparent 20%),
+        linear-gradient(180deg, #070a12 0%, #020408 100%);
+      z-index: -4;
+    }
+
+    .scene::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image: 
+        linear-gradient(rgba(56, 189, 248, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(56, 189, 248, 0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      mask-image: radial-gradient(ellipse at 50% 50%, black 40%, transparent 85%);
+      opacity: 0.8;
+    }
+
+    .noise {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      opacity: 0.05;
+      background-image: repeating-linear-gradient(0deg, #fff 0 1px, transparent 1px 3px);
+    }
+
+    /* Падающий «Цифровой код» вместо снега */
+    .snow {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .snow i {
+      position: absolute;
+      display: block;
+      width: 2px;
+      height: 2px;
+      border-radius: 50%;
+      background: #38bdf8;
+      box-shadow: 0 0 6px #38bdf8;
+      animation: drift var(--duration) linear infinite;
+      animation-delay: var(--delay);
+      opacity: var(--alpha);
+      transform: translate3d(var(--x), -12vh, 0);
+    }
+
+    @keyframes drift {
+      to {
+        transform: translate3d(calc(var(--x) + var(--sway)), 112vh, 0);
+      }
+    }
+
+    .shell {
+      position: relative;
+      z-index: 2;
+      width: min(1180px, calc(100% - 40px));
+      min-height: 100vh;
+      margin: 0 auto;
+      padding: 40px 0 44px;
+    }
+
+    .hero {
+      display: grid;
+      justify-items: center;
+      text-align: center;
+      margin-bottom: 50px;
+    }
+
+    .avatar {
+      position: relative;
+      width: 80px;
+      height: 80px;
+      border-radius: 24px; /* Современный скругленный квадрат */
+      overflow: hidden;
+      border: 2px solid #38bdf8;
+      background: #0f172a;
+      display: grid;
+      place-items: center;
+      font-size: 2rem;
+      box-shadow: 0 0 20px rgba(56, 189, 248, 0.4);
+    }
+
+    .title {
+      margin: 18px 0 8px;
+      color: white;
+      font-size: clamp(2rem, 5vw, 3rem);
+      line-height: 1.1;
+      font-weight: 800;
+      text-shadow: 0 0 30px rgba(56, 189, 248, 0.4);
+    }
+
+    .subtitle {
+      margin: 0;
+      color: var(--muted);
+      font-size: 1rem;
+      font-weight: 500;
+      max-width: 600px;
+      line-height: 1.5;
+    }
+
+    .profile-card {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 14px;
+      width: min(420px, 100%);
+      margin-top: 24px;
+      padding: 12px 16px;
+      border-radius: var(--radius);
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid var(--line);
+      backdrop-filter: blur(20px);
+      box-shadow: var(--shadow);
+    }
+
+    .mini-avatar {
+      width: 40px;
+      height: 40px;
+      display: grid;
+      place-items: center;
+      border-radius: 8px;
+      background: rgba(56, 189, 248, 0.1);
+      color: #38bdf8;
+      border: 1px solid var(--line-strong);
+      font-weight: bold;
+    }
+
+    .profile-copy {
+      text-align: left;
+      min-width: 0;
+    }
+
+    .profile-copy strong {
+      display: block;
+      font-size: 0.85rem;
+      color: white;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .profile-copy span {
+      display: block;
+      color: #38bdf8;
+      font-size: 0.8rem;
+      margin-top: 2px;
+      font-weight: bold;
+    }
+
+    .verify {
+      width: 20px;
+      height: 20px;
+      border-radius: 6px;
+      background: #38bdf8;
+      color: #090d16;
+      display: grid;
+      place-items: center;
+      font-size: 0.75rem;
+      font-weight: 900;
+    }
+
+    .socials {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .socials span {
+      background: rgba(30, 41, 59, 0.8);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 6px 14px;
+      color: #38bdf8;
+      font-size: 0.8rem;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+    
+    .socials span:hover {
+      background: rgba(56, 189, 248, 0.15);
+      border-color: #38bdf8;
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.2);
+    }
+
+    .dashboard {
+      display: grid;
+      grid-template-columns: minmax(260px, 320px) 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    .side-panel,
+    .roadmap {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      backdrop-filter: blur(20px);
+      box-shadow: var(--shadow);
+      border-radius: var(--radius);
+    }
+
+    .side-panel {
+      position: sticky;
+      top: 24px;
+      padding: 20px;
+      display: grid;
+      gap: 20px;
+    }
+
+    .eyebrow {
+      color: var(--faint);
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      font-size: 0.7rem;
+      font-weight: 800;
+    }
+
+    .progress-value {
+      display: flex;
+      align-items: end;
+      gap: 10px;
+      margin: 4px 0 10px;
+    }
+
+    .progress-value strong {
+      font-size: 3.5rem;
+      line-height: 0.85;
+      color: white;
+      text-shadow: 0 0 20px rgba(56, 189, 248, 0.3);
+    }
+
+    .progress-value span {
+      color: var(--muted);
+      font-weight: 600;
+      font-size: 0.85rem;
+      margin-bottom: 4px;
+    }
+
+    .bar {
+      height: 6px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.05);
+      overflow: hidden;
+    }
+
+    .bar i {
+      display: block;
+      height: 100%;
+      width: var(--progress);
+      background: linear-gradient(90deg, #38bdf8, #818cf8);
+      box-shadow: 0 0 15px var(--violet-dim);
+      border-radius: inherit;
+      transition: width 300ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .stat {
+      min-width: 0;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 12px;
+      background: rgba(15, 23, 42, 0.4);
+    }
+
+    .stat span {
+      display: block;
+      color: var(--faint);
+      font-size: 0.65rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .stat strong {
+      display: block;
+      margin-top: 6px;
+      color: white;
+      font-size: 1.3rem;
+      line-height: 1;
+    }
+
+    .filters {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+
+    .filter-btn,
+    .reset-btn {
+      width: 100%;
+      min-height: 42px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      border-radius: var(--radius);
+      border: 1px solid var(--line);
+      background: rgba(15, 23, 42, 0.4);
+      color: var(--muted);
+      cursor: pointer;
+      padding: 0 16px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      transition: all 200ms ease;
+    }
+
+    .filter-btn::after {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--faint);
+    }
+
+    .filter-btn.active {
+      color: white;
+      border-color: #38bdf8;
+      background: rgba(56, 189, 248, 0.1);
+    }
+
+    .filter-btn.active::after {
+      background: #38bdf8;
+      box-shadow: 0 0 10px #38bdf8;
+    }
+
+    .reset-btn {
+      color: #ef4444;
+      border-color: rgba(239, 68, 68, 0.2);
+    }
+
+    .reset-btn:hover {
+      background: rgba(239, 68, 68, 0.1);
+      border-color: #ef4444;
+      color: white;
+    }
+
+    .filter-btn:hover {
+      color: white;
+      border-color: var(--line-strong);
+    }
+
+    .roadmap {
+      padding: 24px;
+    }
+
+    .roadmap-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .roadmap-head h2 {
+      margin: 4px 0 0;
+      color: white;
+      font-size: clamp(1.3rem, 3vw, 1.75rem);
+      line-height: 1.2;
+    }
+
+    .roadmap-head p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 0.88rem;
+      line-height: 1.5;
+      max-width: 620px;
+    }
+
+    .ghost-tag {
+      flex: 0 0 auto;
+      border: 1px solid #38bdf8;
+      border-radius: 999px;
+      padding: 6px 14px;
+      color: #38bdf8;
+      font-size: 0.75rem;
+      font-weight: 700;
+      background: rgba(56, 189, 248, 0.05);
+    }
+
+    .timeline {
+      position: relative;
+      display: grid;
+      gap: 16px;
+      padding-top: 20px;
+    }
+
+    .timeline::before {
+      content: "";
+      position: absolute;
+      left: 27px;
+      top: 26px;
+      bottom: 26px;
+      width: 1px;
+      background: linear-gradient(to bottom, transparent, var(--line-strong), transparent);
+    }
+
+    .stage {
+      position: relative;
+      display: grid;
+      grid-template-columns: 56px 1fr;
+      gap: 16px;
+    }
+
+    .marker {
+      position: relative;
+      z-index: 2;
+      width: 56px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .marker i {
+      width: 36px;
+      height: 36px;
+      margin-top: 14px;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--line);
+      background: #0f172a;
+      color: #38bdf8;
+      font-size: 0.85rem;
+      font-style: normal;
+      font-weight: bold;
+    }
+
+    .stage.completed .marker i {
+      color: #041007;
+      background: var(--green);
+      border-color: var(--green);
+      box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
+    }
+
+    .stage.partial .marker i {
+      color: #090806;
+      background: var(--amber);
+      border-color: var(--amber);
+      box-shadow: 0 0 15px rgba(245, 158, 111, 0.3);
+    }
+
+    .stage-card {
+      border-radius: var(--radius);
+      border: 1px solid var(--line);
+      background: var(--panel-strong);
+      overflow: hidden;
+    }
+
+    .stage-main {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 14px;
+      align-items: center;
+      padding: 16px;
+      background: rgba(15, 23, 42, 0.3);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .stage-main h3 {
+      margin: 0;
+      color: white;
+      font-size: 1.1rem;
+      line-height: 1.2;
+    }
+
+    .stage-main small {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 0.75rem;
+    }
+
+    .stage-percent {
+      color: #38bdf8;
+      border: 1px solid var(--line);
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 8px;
+      padding: 4px 10px;
+      font-size: 0.8rem;
+      font-weight: bold;
+    }
+
+    .stage.completed .stage-percent {
+      color: var(--green);
+      border-color: rgba(16, 185, 129, 0.3);
+    }
+
+    .tasks {
+      display: grid;
+      gap: 1px;
+      background: var(--line);
+    }
+
+    .task-block {
+      display: grid;
+      gap: 8px;
+      padding: 12px;
+      background: #111827;
+      transition: background 0.2s ease;
+    }
+    
+    .task-block:hover {
+      background: #141d2f;
+    }
+
+    .teacher-chip {
+      width: 24px;
+      height: 24px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: rgba(56, 189, 248, 0.05);
+      color: #38bdf8;
+      cursor: pointer;
+      font-size: 0.8rem;
+      font-weight: bold;
+      transition: all 150ms ease;
+    }
+
+    .teacher-chip:hover,
+    .teacher-chip[aria-expanded="true"] {
+      color: white;
+      border-color: #38bdf8;
+      background: #38bdf8;
+    }
+
+    .task-note {
+      margin: 4px 0 0 0;
+      border: 1px solid rgba(56, 189, 248, 0.2);
+      border-radius: 8px;
+      background: rgba(15, 23, 42, 0.8);
+      color: var(--muted);
+      padding: 10px 14px;
+      font-size: 0.8rem;
+      line-height: 1.5;
+    }
+
+    .task {
+      display: grid;
+      grid-template-columns: 24px 1fr auto;
+      gap: 12px;
+      align-items: center;
+      min-height: 44px;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      padding: 6px 10px;
+      background: rgba(0, 0, 0, 0.15);
+    }
+
+    .task input {
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 4px;
+      border: 2px solid var(--faint);
+      background: transparent;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      transition: all 150ms ease;
+    }
+
+    .task input::after {
+      content: "";
+      width: 8px;
+      height: 4px;
+      border-left: 2px solid #090d16;
+      border-bottom: 2px solid #090d16;
+      transform: rotate(-45deg) translateY(-1px);
+      opacity: 0;
+    }
+
+    .task input:checked {
+      background: #38bdf8;
+      border-color: #38bdf8;
+    }
+
+    .task input:checked::after {
+      opacity: 1;
+    }
+
+    .task label {
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 0.85rem;
+      line-height: 1.4;
+      cursor: pointer;
+    }
+
+    .task.done label {
+      color: var(--faint);
+      text-decoration: line-through;
+    }
+
+    .meta {
+      color: var(--faint);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 6px;
+      padding: 3px 8px;
+      font-size: 0.7rem;
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    .empty {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      min-height: 160px;
+      display: grid;
+      place-items: center;
+      color: var(--muted);
+      background: rgba(15, 23, 42, 0.4);
+    }
+
+    @media (max-width: 900px) {
+      .shell {
+        width: min(100% - 28px, 760px);
+        padding-top: 20px;
+      }
+
+      .dashboard {
+        grid-template-columns: 1fr;
+      }
+
+      .side-panel {
+        position: static;
+      }
+
+      .filters {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      .reset-btn {
+        grid-column: 1 / -1;
+      }
+    }
+
+    @media (max-width: 620px) {
+      .shell {
+        width: min(100% - 22px, 460px);
+      }
+
+      .filters,
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .roadmap {
+        padding: 16px;
+      }
+
+      .roadmap-head {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .timeline::before {
+        left: 18px;
+      }
+
+      .stage {
+        grid-template-columns: 38px 1fr;
+        gap: 8px;
+      }
+
+      .marker {
+        width: 38px;
+      }
+
+      .marker i {
+        width: 28px;
+        height: 28px;
+        font-size: 0.75rem;
+      }
+
+      .stage-main {
+        grid-template-columns: 1fr;
+      }
+
+      .task {
+        grid-template-columns: 24px 1fr;
+      }
+
+      .meta {
+        grid-column: 2;
+        width: fit-content;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="scene" aria-hidden="true"></div>
+  <div class="noise" aria-hidden="true"></div>
+  <div class="snow" aria-hidden="true" id="snow"></div>
+
+  <main class="shell">
+    <section class="hero" aria-label="профиль">
+      <div class="avatar">
+        &lt;/&gt;
+      </div>
+      <h1 class="title">Что такое программирование?</h1>
+      <p class="subtitle">Интерактивный путеводитель по миру кода: от базовых понятий до создания работающих цифровых продуктов.</p>
+      
+      <div class="profile-card">
+        <div class="mini-avatar">JS</div>
+        <div class="profile-copy">
+          <strong>Твой прогресс в изучении:</strong>
+          <span id="statusLine">0 / 15 концепций изучено</span>
+        </div>
+        <div class="verify">✓</div>
+      </div>
+
+      <div class="socials" aria-label="стек">
+        <span>#Разработка</span>
+        <span>#Алгоритмы</span>
+        <span>#БазыДанных</span>
+        <span>#WebДисциплина</span>
+      </div>
+    </section>
+
+    <section class="dashboard">
+      <aside class="side-panel" aria-label="управление прогрессом">
+        <div>
+          <span class="eyebrow">Освоено материала</span>
+          <div class="progress-value">
+            <strong id="globalPercent">0%</strong>
+            <span id="taskCounter">0 / 15</span>
+          </div>
+          <div class="bar" aria-hidden="true">
+            <i id="progressBar" style="--progress: 0%"></i>
+          </div>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat">
+            <span>Разделы</span>
+            <strong id="stageCounter">5</strong>
+          </div>
+          <div class="stat">
+            <span>Уровень</span>
+            <strong id="focusLabel">База</strong>
+          </div>
+        </div>
+
+        <div class="filters" id="filterContainer">
+          <button class="filter-btn active" data-filter="all">Все темы</button>
+          <button class="filter-btn" data-filter="completed">Изучено</button>
+          <button class="filter-btn" data-filter="incomplete">В процессе</button>
+          <button class="reset-btn" id="resetAllBtn">Сбросить историю <span>×</span></button>
+        </div>
+      </aside>
+
+      <section class="roadmap" aria-label="список дорожной карты">
+        <div class="roadmap-head">
+          <div>
+            <span class="eyebrow">Карта знаний</span>
+            <h2>Пошаговые этапы погружения</h2>
+            <p>Пройди по 5 ключевым модулям, отмечай понятные темы и читай подробные разборы, кликая на кнопку со знаком восклицания.</p>
+          </div>
+          <div class="ghost-tag" id="activeFilterLabel">Все темы</div>
+        </div>
+        <div class="timeline" id="timelineRoot"></div>
+      </section>
+    </section>
+  </main>
+
+  <script>
+    // Полностью обновленные данные под тему "Что такое программирование"
+    const roadmapData = [
+      {
+        id: 1,
+        name: "1. Суть и базовые понятия",
+        icon: "01",
+        focus: "База",
+        tasks: [
+          { id: "p1", text: "Что такое код и как компьютер его понимает?", completed: false, meta: "Теория", note: "Программирование — это составление инструкций для процессора. Компьютер понимает только двоичный код (0 и 1), а языки программирования переводят человеческие мысли в понятные машине команды с помощью компиляторов." },
+          { id: "p2", text: "Переменные и типы данных (числа, строки, массивы)", completed: false, meta: "Основа", note: "Переменная — это именованная ячейка памяти для хранения информации. Основные типы: Integer (целые числа), String (текст), Boolean (истина/ложь) и Arrays (списки данных)." },
+          { id: "p3", text: "Управляющие конструкции: условия и циклы", completed: false, meta: "Логика", note: "Условия (if/else) позволяют программе принимать решения на основе данных. Циклы (for/while) заставляют компьютер повторять однотипные действия миллионы раз без остановки." }
+        ]
+      },
+      {
+        id: 2,
+        name: "2. Как работают языки программирования",
+        icon: "02",
+        focus: "Языки",
+        tasks: [
+          { id: "p4", text: "Компилируемые языки (C++, Rust, Go)", completed: false, meta: "Низкий уровень", note: "Код этих языков полностью преобразуется компилятором в машинный код (бинарный файл) до запуска программы. Это обеспечивает максимальную скорость работы." },
+          { id: "p5", text: "Интерпретируемые языки (Python, JavaScript)", completed: false, meta: "Высокий уровень", note: "Код выполняется построчно специальной программой — интерпретатором непосредственно во время запуска. Писать код на них проще и быстрее, но работают они медленнее компилируемых." },
+          { id: "p6", text: "Синтаксис, семантика и частые ошибки кодеров", completed: false, meta: "Практика", note: "Синтаксис — правила написания команд (как грамматика). Ошибки бывают синтаксические (пропущена точка с запятой, код не запустится) и логические (код работает, но считает неправильно)." }
+        ]
+      },
+      {
+        id: 3,
+        name: "3. Архитектура программ и данные",
+        icon: "03",
+        focus: "Устройство",
+        tasks: [
+          { id: "p7", text: "Алгоритмы и структуры данных: зачем они нужны?", completed: false, meta: "Структуры", note: "Алгоритм — это четкий план решения задачи (например, сортировка списка). Понимание алгоритмов помогает писать эффективный код, который не зависает при больших нагрузках." },
+          { id: "p8", text: "Где хранятся данные? Базы данных и SQL", completed: false, meta: "Хранение", note: "Программы не могут хранить всё в оперативной памяти. Для долгосрочного структурированного хранения используются Базы Данных (СУБД), а язык SQL помогает делать к ним запросы." },
+          { id: "p9", text: "Функции и модульность кода (Don't Repeat Yourself)", completed: false, meta: "Чистый код", note: "Функция — многократно используемый кусок кода. Вместо копирования одинаковых строк разработчики оборачивают их в функции, собирая программу как конструктор LEGO." }
+        ]
+      },
+      {
+        id: 4,
+        name: "4. Основные направления в IT",
+        icon: "04",
+        focus: "Сферы",
+        tasks: [
+          { id: "p10", text: "Frontend и Backend: создание веб-сайтов", completed: false, meta: "Web", note: "Frontend — это интерфейс, который видит пользователь в браузере (HTML/CSS/JS). Backend — серверная часть, логика работы под капотом, обработка платежей и авторизация." },
+          { id: "p11", text: "Мобильная разработка (iOS / Android)", completed: false, meta: "Смартфоны", note: "Создание приложений для телефонов. Делится на нативную разработку (Swift для Apple, Kotlin для Android) и кроссплатформенную (Flutter, React Native) для двух систем сразу." },
+          { id: "p12", text: "Искусственный интеллект и Data Science", completed: false, meta: "Нейросети", note: "Область, где программисты обучают машины находить закономерности в терабайтах данных. Здесь лидирует язык Python, на котором создаются нейросети и умные боты." }
+        ]
+      },
+      {
+        id: 5,
+        name: "5. Инструменты и экосистема",
+        icon: "05",
+        focus: "Релиз",
+        tasks: [
+          { id: "p13", text: "Среды разработки (IDE) и редакторы кода", completed: false, meta: "Инструмент", note: "Специальный софт для программистов (например, VS Code). Обеспечивает подсветку синтаксиса, автодополнение команд и выявление ошибок на лету." },
+          { id: "p14", text: "Система контроля версий Git и сервис GitHub", completed: false, meta: "Команда", note: "Git позволяет сохранять историю изменений кода по точкам (коммитам) и возвращаться назад при поломке. На GitHub программисты делятся кодом и работают в командах." },
+          { id: "p15", text: "Твой первый запуск: Написание программы 'Hello World!'", completed: false, meta: "Финал", note: "Традиционный первый шаг в любом языке программирования — вывод на экран приветствия. Это доказывает, что среда настроена верно и код выполняется компьютером." }
+        ]
+      }
+    ];
+
+    let currentData = [];
+    let currentFilter = "all";
+
+    const storageKey = "programmingRoadmapProgress";
+    const timelineRoot = document.getElementById("timelineRoot");
+    const globalPercent = document.getElementById("globalPercent");
+    const taskCounter = document.getElementById("taskCounter");
+    const statusLine = document.getElementById("statusLine");
+    const progressBar = document.getElementById("progressBar");
+    const focusLabel = document.getElementById("focusLabel");
+    const activeFilterLabel = document.getElementById("activeFilterLabel");
+
+    function loadProgress() {
+      const saved = localStorage.getItem(storageKey);
+      if (saved) {
+        try {
+          const savedTasks = JSON.parse(saved);
+          for (const stage of roadmapData) {
+            for (const task of stage.tasks) {
+              task.completed = savedTasks[task.id] === true;
+            }
+          }
+        } catch (error) {
+          localStorage.removeItem(storageKey);
+        }
+      }
+      currentData = JSON.parse(JSON.stringify(roadmapData));
+    }
+
+    function saveProgress() {
+      const progressMap = {};
+      for (const stage of currentData) {
+        for (const task of stage.tasks) {
+          progressMap[task.id] = task.completed;
+        }
+      }
+      localStorage.setItem(storageKey, JSON.stringify(progressMap));
+    }
+
+    function getStageProgress(stage) {
+      if (!stage.tasks.length) return 1;
+      return stage.tasks.filter((task) => task.completed).length / stage.tasks.length;
+    }
+
+    function getStageStatus(stage) {
+      const progress = getStageProgress(stage);
+      if (progress === 1) return "completed";
+      if (progress > 0) return "partial";
+      return "default";
+    }
+
+    function getGlobalStats() {
+      let total = 0;
+      let done = 0;
+      for (const stage of currentData) {
+        total += stage.tasks.length;
+        done += stage.tasks.filter((task) => task.completed).length;
+      }
+      return {
+        total,
+        done,
+        percent: total === 0 ? 0 : Math.round((done / total) * 100)
+      };
+    }
+
+    function updateStatsUI() {
+      const stats = getGlobalStats();
+      const activeStage = currentData.find((stage) => getStageProgress(stage) < 1) || currentData[currentData.length - 1];
+      globalPercent.textContent = `${stats.percent}%`;
+      taskCounter.textContent = `${stats.done} / ${stats.total}`;
+      statusLine.textContent = `${stats.done} / ${stats.total} концепций изучено`;
+      progressBar.style.setProperty("--progress", `${stats.percent}%`);
+      focusLabel.textContent = activeStage ? activeStage.focus : "Готово";
+      activeFilterLabel.textContent = currentFilter === "all" ? "Все темы" : currentFilter === "completed" ? "Изучено" : "В процессе";
+    }
+
+    function shouldShowStage(stage, filter) {
+      const progress = getStageProgress(stage);
+      if (filter === "completed") return progress === 1;
+      if (filter === "incomplete") return progress < 1;
+      return true;
+    }
+
+    function escapeHtml(value) {
+      return String(value).replace(/[&<>"]/g, (char) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        "\"": "&quot;"
+      }[char]));
+    }
+
+    function renderTimeline(filter) {
+      const filteredStages = currentData.filter((stage) => shouldShowStage(stage, filter));
+
+      if (!filteredStages.length) {
+        timelineRoot.innerHTML = '<div class="empty">По этому фильтру разделов не найдено</div>';
+        return;
+      }
+
+      timelineRoot.innerHTML = filteredStages.map((stage) => {
+        const progress = getStageProgress(stage);
+        const status = getStageStatus(stage);
+        const done = stage.tasks.filter((task) => task.completed).length;
+        const total = stage.tasks.length;
+        const taskHtml = stage.tasks.map((task) => `
+          <div class="task-block ${task.completed ? "done" : ""}" data-task-id="${escapeHtml(task.id)}">
+            <button class="teacher-chip" type="button" data-note-target="${escapeHtml(task.id)}" aria-expanded="false" aria-controls="note-${escapeHtml(task.id)}" aria-label="Пояснение к теме" title="Показать разбор темы">!</button>
+            <p class="task-note" id="note-${escapeHtml(task.id)}" hidden>${escapeHtml(task.note)}</p>
+            <div class="task ${task.completed ? "done" : ""}">
+              <input id="${escapeHtml(task.id)}" type="checkbox" ${task.completed ? "checked" : ""} data-id="${escapeHtml(task.id)}">
+              <label for="${escapeHtml(task.id)}">${escapeHtml(task.text)}</label>
+              <span class="meta">${escapeHtml(task.meta)}</span>
+            </div>
+          </div>
+        `).join("");
+
+        return `
+          <article class="stage ${status}" data-stage-id="${stage.id}">
+            <div class="marker"><i>${escapeHtml(stage.icon)}</i></div>
+            <div class="stage-card">
+              <div class="stage-main">
+                <div>
+                  <h3>${escapeHtml(stage.name)}</h3>
+                  <small>${done}/${total} шагов пройдено</small>
+                </div>
+                <div class="stage-percent">${Math.round(progress * 100)}%</div>
+              </div>
+              <div class="tasks">${taskHtml}</div>
+            </div>
+          </article>
+        `;
+      }).join("");
+
+      timelineRoot.querySelectorAll("input[type='checkbox']").forEach((checkbox) => {
+        checkbox.addEventListener("change", () => {
+          toggleTask(checkbox.dataset.id, checkbox.checked);
+        });
+      });
+
+      timelineRoot.querySelectorAll(".teacher-chip").forEach((button) => {
+        button.addEventListener("click", () => {
+          const taskBlock = button.closest(".task-block");
+          const note = taskBlock.querySelector(".task-note");
+          const shouldOpen = note.hidden;
+          note.hidden = !shouldOpen;
+          taskBlock.classList.toggle("open-note", shouldOpen);
+          button.setAttribute("aria-expanded", String(shouldOpen));
+        });
+      });
+    }
+
+    function toggleTask(taskId, completed) {
+      for (const stage of currentData) {
+        const task = stage.tasks.find((item) => item.id === taskId);
+        if (task) {
+          task.completed = completed;
+          saveProgress();
+          updateStatsUI();
+          renderTimeline(currentFilter);
+          return;
+        }
+      }
+    }
+
+    function resetAllProgress() {
+      for (const stage of currentData) {
+        for (const task of stage.tasks) {
+          task.completed = false;
+        }
+      }
+      saveProgress();
+      updateStatsUI();
+      renderTimeline(currentFilter);
+    }
+
+    function initFilters() {
+      document.querySelectorAll(".filter-btn").forEach((button) => {
+        button.addEventListener("click", () => {
+          currentFilter = button.dataset.filter;
+          document.querySelectorAll(".filter-btn").forEach((item) => item.classList.remove("active"));
+          button.classList.add("active");
+          updateStatsUI();
+          renderTimeline(currentFilter);
+        });
+      });
+    }
+
+    // Падающий неоновый код (зеленый/голубой бинарный дождь) вместо обычного снега
+    function initSnow() {
+      const snow = document.getElementById("snow");
+      const flakes = Array.from({ length: 40 }, (_, index) => {
+        const flake = document.createElement("i");
+        flake.style.setProperty("--x", `${Math.random() * 100}vw`);
+        flake.style.setProperty("--sway", `${(Math.random() * 8 - 4).toFixed(2)}vw`);
+        flake.style.setProperty("--duration", `${6 + Math.random() * 10}s`);
+        flake.style.setProperty("--delay", `${-1 * Math.random() * 12}s`);
+        flake.style.setProperty("--alpha", `${0.2 + Math.random() * 0.7}`);
+        // Разнообразные размеры для глубины кадра
+        flake.style.width = `${index % 5 === 0 ? 3 : 1.5 + Math.random() * 2}px`;
+        flake.style.height = `${index % 5 === 0 ? 8 : 3 + Math.random() * 4}px`; // Вертикальные полосы а-ля матрица
+        flake.style.borderRadius = "2px";
+        return flake;
+      });
+      snow.append(...flakes);
+    }
+
+    document.getElementById("resetAllBtn").addEventListener("click", resetAllProgress);
+
+    loadProgress();
+    updateStatsUI();
+    renderTimeline(currentFilter);
+    initFilters();
+    initSnow();
+  </script>
+</body>
+</html>
